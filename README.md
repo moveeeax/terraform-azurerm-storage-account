@@ -9,7 +9,7 @@ exposes the primary endpoints and access keys as sensitive outputs.
 
 ```hcl
 module "storage_account" {
-  source = "github.com/cybercapybara/terraform-azurerm-storage-account"
+  source = "github.com/moveeeax/terraform-azurerm-storage-account"
 
   name                = "prodsa0storage"
   resource_group_name = "prod-rg"

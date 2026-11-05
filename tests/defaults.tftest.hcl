@@ -166,3 +166,13 @@ run "rejects_out_of_range_retention" {
 
   expect_failures = [var.blob_delete_retention_days]
 }
+
+run "rejects_legacy_min_tls_version" {
+  command = plan
+
+  variables {
+    min_tls_version = "TLS1_1"
+  }
+
+  expect_failures = [var.min_tls_version]
+}

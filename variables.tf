@@ -63,13 +63,13 @@ variable "access_tier" {
 }
 
 variable "min_tls_version" {
-  description = "Minimum TLS version accepted by the storage account. Azure Storage rejects anything below TLS1_2, so lower values are accepted here only for parity with the provider."
+  description = "Minimum TLS version accepted by the storage account. Only TLS1_2 is accepted: azurerm 5.0 rejects TLS1_0 and TLS1_1, and the module refuses them on every provider version so the result does not depend on which provider major resolves."
   type        = string
   default     = "TLS1_2"
 
   validation {
-    condition     = contains(["TLS1_0", "TLS1_1", "TLS1_2"], var.min_tls_version)
-    error_message = "The min_tls_version must be one of TLS1_0, TLS1_1 or TLS1_2."
+    condition     = var.min_tls_version == "TLS1_2"
+    error_message = "The min_tls_version must be TLS1_2. TLS1_0 and TLS1_1 are rejected by azurerm 5.x and by this module."
   }
 }
 

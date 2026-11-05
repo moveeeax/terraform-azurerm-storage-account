@@ -10,7 +10,7 @@ exposes the primary endpoints and access keys as sensitive outputs.
 
 ```hcl
 module "storage_account" {
-  source = "github.com/moveeeax/terraform-azurerm-storage-account"
+  source = "github.com/moveeeax/terraform-azurerm-storage-account?ref=v1.0.0"
 
   name                = "prodsa0storage"
   resource_group_name = "prod-rg"
@@ -56,11 +56,13 @@ the same setting.
 | Name      | Version              |
 |-----------|----------------------|
 | terraform | >= 1.5               |
-| azurerm   | >= 3.117.0, < 5.0    |
+| azurerm   | >= 3.117.0, < 6.0    |
 
 `https_traffic_only_enabled` only exists in azurerm 3.117.0 and later (in older
 3.x releases it was called `enable_https_traffic_only`), which is why the lower
-bound is 3.117.0 rather than 3.0.
+bound is 3.117.0 rather than 3.0. The upper bound is the next major: CI
+validates and tests against 3.117.0 and the latest 5.x release, and 6.x is
+excluded until it has been tested.
 
 Running the test suite in [`tests/`](tests) additionally needs Terraform >= 1.7
 for `mock_provider`. That is a test-only requirement; the module itself still
@@ -77,7 +79,7 @@ works on 1.5.
 | `account_replication_type`          | Replication strategy for the storage account.                               | `string`        | `"LRS"`       |    no    |
 | `account_kind`                      | Kind of storage account.                                                    | `string`        | `"StorageV2"` |    no    |
 | `access_tier`                       | Default access tier for blob storage.                                       | `string`        | `"Hot"`       |    no    |
-| `min_tls_version`                   | Minimum TLS version accepted by the storage account.                        | `string`        | `"TLS1_2"`    |    no    |
+| `min_tls_version`                   | Minimum TLS version. Only `TLS1_2` is accepted (azurerm 5.x rejects older values). | `string`        | `"TLS1_2"`    |    no    |
 | `https_traffic_only_enabled`        | Whether to force HTTPS-only traffic.                                        | `bool`          | `true`        |    no    |
 | `allow_nested_items_to_be_public`   | Whether blobs and containers may allow anonymous public access.             | `bool`          | `false`       |    no    |
 | `shared_access_key_enabled`         | Whether shared access keys may authorise data-plane requests.               | `bool`          | `true`        |    no    |

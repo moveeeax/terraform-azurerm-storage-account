@@ -6,6 +6,8 @@ All notable changes to this module are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-08
+
 ### Added
 
 - `containers` input creates `azurerm_storage_container` resources keyed by
@@ -32,6 +34,7 @@ All notable changes to this module are documented here. The format follows
 
 Initial release (`v0.1.0` points at the same commit).
 
-[Unreleased]: https://github.com/moveeeax/terraform-azurerm-storage-account/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/moveeeax/terraform-azurerm-storage-account/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/moveeeax/terraform-azurerm-storage-account/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/moveeeax/terraform-azurerm-storage-account/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/moveeeax/terraform-azurerm-storage-account/releases/tag/v1.0.0

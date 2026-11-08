@@ -24,3 +24,8 @@ output "primary_connection_string" {
   value       = azurerm_storage_account.this.primary_connection_string
   sensitive   = true
 }
+
+output "container_ids" {
+  description = "IDs of the containers created from var.containers, keyed by container name."
+  value       = { for name, c in azurerm_storage_container.this : name => c.id }
+}

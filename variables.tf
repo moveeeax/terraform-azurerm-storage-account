@@ -157,3 +157,22 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "containers" {
+  description = "Blob containers to create in the storage account, keyed by container name. access_type is private, blob or container; anything other than private also needs allow_nested_items_to_be_public = true."
+  type = map(object({
+    access_type = optional(string, "private")
+    metadata    = optional(map(string), {})
+  }))
+  default = {}
+
+  validation {
+    condition     = alltrue([for name in keys(var.containers) : length(name) >= 3 && length(name) <= 63 && can(regex("^[a-z0-9]+(-[a-z0-9]+)*$", name))])
+    error_message = "Each container name must be 3-63 characters of lowercase letters, digits and hyphens, start and end with a letter or digit, and contain no consecutive hyphens."
+  }
+
+  validation {
+    condition     = alltrue([for c in values(var.containers) : contains(["private", "blob", "container"], c.access_type)])
+    error_message = "Each containers access_type must be one of private, blob or container."
+  }
+}

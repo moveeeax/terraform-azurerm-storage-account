@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.117.0, < 6.0"
+      version = ">= 4.9.0, < 6.0"
     }
   }
 }
@@ -31,6 +31,10 @@ module "storage_account" {
     ip_rules       = ["203.0.113.0/24"]
   }
 
+  containers = {
+    "data" = {}
+  }
+
   tags = {
     Environment = "sandbox"
     ManagedBy   = "terraform"
@@ -39,4 +43,8 @@ module "storage_account" {
 
 output "storage_account_id" {
   value = module.storage_account.id
+}
+
+output "container_ids" {
+  value = module.storage_account.container_ids
 }

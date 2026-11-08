@@ -42,3 +42,25 @@ resource "azurerm_storage_account" "this" {
 
   tags = var.tags
 }
+
+# Containers are addressed by `storage_account_id`, which goes through the ARM
+# management plane. That keeps working when the module's default firewall
+# (`default_action = "Deny"`) or `shared_access_key_enabled = false` would
+# block the data-plane API used by the older `storage_account_name` argument.
+resource "azurerm_storage_container" "this" {
+  for_each = var.containers
+
+  name                  = each.key
+  storage_account_id    = azurerm_storage_account.this.id
+  container_access_type = each.value.access_type
+  metadata              = each.value.metadata
+
+  lifecycle {
+    # Cross-variable check kept here rather than in a variable validation,
+    # because those need Terraform 1.9 and the module supports >= 1.5.
+    precondition {
+      condition     = var.allow_nested_items_to_be_public || each.value.access_type == "private"
+      error_message = "Container \"${each.key}\" has access_type \"${each.value.access_type}\", but allow_nested_items_to_be_public is false. Use access_type = \"private\" or set allow_nested_items_to_be_public = true."
+    }
+  }
+}

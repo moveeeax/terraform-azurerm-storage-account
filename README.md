@@ -35,6 +35,28 @@ module "storage_account" {
 
 A runnable example lives in [`examples/basic`](examples/basic).
 
+### Containers
+
+`containers` creates blob containers in the account, keyed by container name.
+It defaults to `{}`, so nothing is created unless you ask for it.
+
+```hcl
+  containers = {
+    "tfstate" = {}
+    "logs"    = { metadata = { purpose = "audit" } }
+    "assets"  = { access_type = "blob" } # needs allow_nested_items_to_be_public = true
+  }
+```
+
+`access_type` defaults to `private`. `blob` and `container` grant anonymous
+read access, so the module refuses them at plan time unless
+`allow_nested_items_to_be_public = true`. Keep containers private unless you
+really serve public content.
+
+Containers are created through the ARM management plane (`storage_account_id`),
+so they can be managed while the firewall denies your network or
+`shared_access_key_enabled = false`.
+
 ### Network access
 
 `network_rules` controls the storage firewall and defaults to
@@ -56,13 +78,14 @@ the same setting.
 | Name      | Version              |
 |-----------|----------------------|
 | terraform | >= 1.5               |
-| azurerm   | >= 3.117.0, < 6.0    |
+| azurerm   | >= 4.9.0, < 6.0      |
 
-`https_traffic_only_enabled` only exists in azurerm 3.117.0 and later (in older
-3.x releases it was called `enable_https_traffic_only`), which is why the lower
-bound is 3.117.0 rather than 3.0. The upper bound is the next major: CI
-validates and tests against 3.117.0 and the latest 5.x release, and 6.x is
-excluded until it has been tested.
+The lower bound is 4.9.0 because that is the first release where
+`azurerm_storage_container` accepts `storage_account_id`. Older releases only
+take `storage_account_name`, which azurerm 5.0 removed, so one module cannot
+cover both 3.x and 5.x. The upper bound is the next major: CI validates and
+tests against 4.9.0 and the latest 5.x release, and 6.x is excluded until it
+has been tested.
 
 Running the test suite in [`tests/`](tests) additionally needs Terraform >= 1.7
 for `mock_provider`. That is a test-only requirement; the module itself still
@@ -89,6 +112,7 @@ works on 1.5.
 | `blob_versioning_enabled`           | Whether blob versioning is enabled.                                         | `bool`          | `true`        |    no    |
 | `blob_delete_retention_days`        | Days deleted blobs are retained before permanent deletion (1-365).          | `number`        | `7`           |    no    |
 | `container_delete_retention_days`   | Days deleted containers are retained before permanent deletion (1-365).     | `number`        | `7`           |    no    |
+| `containers`                        | Blob containers keyed by name: `access_type` (default `private`), `metadata`. See [Containers](#containers). | `map(object)` | `{}` | no |
 | `tags`                              | Map of tags applied to the storage account.                                 | `map(string)`   | `{}`          |    no    |
 
 ## Outputs
@@ -100,6 +124,7 @@ works on 1.5.
 | `primary_blob_endpoint`     | Endpoint URL for blob storage in the primary region.|
 | `primary_access_key`        | Primary access key (sensitive).                    |
 | `primary_connection_string` | Primary connection string (sensitive).             |
+| `container_ids`             | Container IDs keyed by container name.             |
 
 `primary_access_key` and `primary_connection_string` are empty when
 `shared_access_key_enabled = false`.
